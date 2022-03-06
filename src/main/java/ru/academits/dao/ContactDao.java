@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 public class ContactDao {
-    private List<Contact> contactList = new ArrayList<>();
-    private AtomicInteger idSequence = new AtomicInteger(0);
+    private final List<Contact> contactList = new ArrayList<>();
+    private final AtomicInteger idSequence = new AtomicInteger(0);
 
     public ContactDao() {
         Contact contact = new Contact();
