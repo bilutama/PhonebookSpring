@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/phoneBook/rpc/api/v1")
@@ -23,9 +25,30 @@ public class PhoneBookController {
 
     @RequestMapping(value = "getAllContacts", method = RequestMethod.GET)
     @ResponseBody
-    public List<Contact> getAllContacts() {
-        logger.info("called method getAllContacts");
-        return contactService.getAllContacts();
+    public List<Contact> getContacts(@RequestParam String term) {
+        // === LOGGER START
+        if (term == null) {
+            logger.info("called method getContacts with empty term");
+        } else {
+            // TODO: upd
+            logger.info("called method getContacts with term");
+        }
+        // === LOGGER END
+
+        List<Contact> contactList = contactService.getAllContacts();
+
+        // Filter contacts if term is passed
+        if (term != null) {
+            String finalTerm = term.toLowerCase(Locale.ROOT);
+
+            contactList = contactList.stream()
+                    .filter(c -> c.getFirstName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                            c.getLastName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                            c.getPhone().toLowerCase(Locale.ROOT).contains(finalTerm))
+                    .collect(Collectors.toList());
+        }
+
+        return contactList;
     }
 
     @RequestMapping(value = "addContact", method = RequestMethod.POST)

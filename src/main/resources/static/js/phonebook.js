@@ -26,6 +26,7 @@ new Vue({
             note += ")";
             return note;
         },
+
         convertContactList: function (contactListFromServer) {
             return contactListFromServer.map(function (contact, i) {
                 return {
@@ -39,6 +40,7 @@ new Vue({
                 };
             });
         },
+
         addContact: function () {
             if (this.hasError) {
                 this.validation = true;
@@ -77,6 +79,7 @@ new Vue({
             });
         }
     },
+
     computed: {
         firstNameError: function () {
             if (this.firstName) {
@@ -134,6 +137,7 @@ new Vue({
             return this.lastNameError.error || this.firstNameError.error || this.phoneError.error;
         }
     },
+
     created: function () {
         this.loadData();
     }

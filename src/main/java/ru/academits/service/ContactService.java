@@ -5,6 +5,7 @@ import ru.academits.dao.ContactDao;
 import ru.academits.model.Contact;
 import ru.academits.model.ContactValidation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,17 +18,20 @@ public class ContactService {
 
     private boolean isExistContactWithPhone(String phone) {
         List<Contact> contactList = contactDao.getAllContacts();
+
         for (Contact contact : contactList) {
             if (contact.getPhone().equals(phone)) {
                 return true;
             }
         }
+
         return false;
     }
 
     private ContactValidation validateContact(Contact contact) {
         ContactValidation contactValidation = new ContactValidation();
         contactValidation.setValid(true);
+
         if (contact.getFirstName().isEmpty()) {
             contactValidation.setValid(false);
             contactValidation.setError("Поле Имя должно быть заполнено.");
@@ -51,18 +55,29 @@ public class ContactService {
             contactValidation.setError("Номер телефона не должен дублировать другие номера в телефонной книге.");
             return contactValidation;
         }
+
         return contactValidation;
     }
 
     public ContactValidation addContact(Contact contact) {
         ContactValidation contactValidation = validateContact(contact);
+
         if (contactValidation.isValid()) {
             contactDao.add(contact);
         }
+
         return contactValidation;
     }
 
-    public List<Contact> getAllContacts() {
+    public List<Contact> getContacts() {
         return contactDao.getAllContacts();
+    }
+
+    public boolean toggleImportant(int contactId) {
+        return contactDao.toggleImportant(contactId);
+    }
+
+    public void deleteContacts(ArrayList<Integer> contactsIds) {
+        contactDao.deleteContacts(contactsIds);
     }
 }
