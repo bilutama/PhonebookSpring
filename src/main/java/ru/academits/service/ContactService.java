@@ -69,7 +69,7 @@ public class ContactService {
         return contactValidation;
     }
 
-    public List<Contact> getContacts() {
+    public List<Contact> getAllContacts() {
         return contactDao.getAllContacts();
     }
 

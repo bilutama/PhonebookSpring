@@ -13,13 +13,13 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/phoneBook/rpc/api/v1")
-public class PhoneBookController {
-    private static final Logger logger = LoggerFactory.getLogger(PhoneBookController.class);
+@RequestMapping("/phonebook/rpc/api/v1")
+public class PhonebookController {
+    private static final Logger logger = LoggerFactory.getLogger(PhonebookController.class);
 
     private final ContactService contactService;
 
-    public PhoneBookController(ContactService contactService) {
+    public PhonebookController(ContactService contactService) {
         this.contactService = contactService;
     }
 
@@ -28,10 +28,11 @@ public class PhoneBookController {
     public List<Contact> getContacts(@RequestParam String term) {
         // === LOGGER START
         if (term == null) {
-            logger.info("called method getContacts with empty term");
+            logger.info("getContacts method was called with no term");
         } else {
             // TODO: upd
-            logger.info("called method getContacts with term");
+            String logMessage = String.format("getContacts method was called with term = %s", term);
+            logger.info(logMessage);
         }
         // === LOGGER END
 

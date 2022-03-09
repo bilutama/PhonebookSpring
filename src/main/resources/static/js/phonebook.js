@@ -53,7 +53,7 @@ new Vue({
             var contact = new Contact(this.firstName, this.lastName, this.phone);
             $.ajax({
                 type: "POST",
-                url: "/phoneBook/rpc/api/v1/addContact",
+                url: "/phonebook/rpc/api/v1/addContact",
                 contentType: "application/json",
                 data: JSON.stringify(contact)
             }).done(function () {
@@ -74,7 +74,7 @@ new Vue({
         loadData: function () {
             var self = this;
 
-            $.get("/phoneBook/rpc/api/v1/getAllContacts").done(function (contactListFormServer) {
+            $.get("/phonebook/rpc/api/v1/getAllContacts").done(function (contactListFormServer) {
                 self.rows = self.convertContactList(contactListFormServer);
             });
         }
