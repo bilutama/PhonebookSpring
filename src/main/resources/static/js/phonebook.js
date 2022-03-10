@@ -71,6 +71,7 @@ new Vue({
             self.phone = "";
             self.validation = false;
         },
+
         loadData: function () {
             var self = this;
 
@@ -94,6 +95,7 @@ new Vue({
                 error: true
             };
         },
+
         lastNameError: function () {
             if (!this.lastName) {
                 return {
@@ -107,6 +109,7 @@ new Vue({
                 error: false
             };
         },
+
         phoneError: function () {
             if (!this.phone) {
                 return {
@@ -133,6 +136,7 @@ new Vue({
                 error: false
             };
         },
+
         hasError: function () {
             return this.lastNameError.error || this.firstNameError.error || this.phoneError.error;
         }

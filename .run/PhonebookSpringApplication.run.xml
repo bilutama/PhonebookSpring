@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PhonebookSpringApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="PhonebookSpring" />
+    <module name="phonebookspring" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="ru.academits.PhonebookSpringApplication" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="15" />

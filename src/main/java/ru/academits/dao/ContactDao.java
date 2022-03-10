@@ -19,6 +19,7 @@ public class ContactDao {
         contact.setFirstName("John");
         contact.setLastName("Smith");
         contact.setPhone("9123456789");
+
         contactList.add(contact);
     }
 

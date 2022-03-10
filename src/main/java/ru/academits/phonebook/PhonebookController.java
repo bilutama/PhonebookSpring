@@ -39,17 +39,17 @@ public class PhonebookController {
         List<Contact> contactList = contactService.getAllContacts();
 
         // Filter contacts if term is passed
-        if (term != null) {
-            String finalTerm = term.toLowerCase(Locale.ROOT);
-
-            contactList = contactList.stream()
-                    .filter(c -> c.getFirstName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
-                            c.getLastName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
-                            c.getPhone().toLowerCase(Locale.ROOT).contains(finalTerm))
-                    .collect(Collectors.toList());
+        if (term == null || term.equals("")) {
+            return contactList;
         }
 
-        return contactList;
+        String finalTerm = term.toLowerCase(Locale.ROOT);
+
+        return contactList.stream()
+                .filter(c -> c.getFirstName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                        c.getLastName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                        c.getPhone().toLowerCase(Locale.ROOT).contains(finalTerm))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "addContact", method = RequestMethod.POST)
