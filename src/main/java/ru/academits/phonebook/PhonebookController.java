@@ -23,7 +23,7 @@ public class PhonebookController {
         this.contactService = contactService;
     }
 
-    @RequestMapping(value = "getAllContacts", method = RequestMethod.GET)
+    @RequestMapping(value = "getAllContacts", method = RequestMethod.POST)
     @ResponseBody
     public List<Contact> getContacts(@RequestParam String term) {
         // === LOGGER START

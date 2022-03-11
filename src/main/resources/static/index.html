@@ -1,110 +1,210 @@
 <!DOCTYPE html>
-<html lang="">
-
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/phonebook.css"/>
-    <title>Phone book</title>
+    <script defer src="js/libs/jquery.js"></script>
+    <script defer src="js/libs/bootstrap.js"></script>
+    <script defer src="js/libs/vue.js"></script>
+    <script defer src="js/phonebook.js"></script>
+
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/phonebook.css"/>
+    <title>Phonebook on Spring</title>
+    <link rel="shortcut icon" href="images/phonebook.svg" type="image/svg"/>
 </head>
 
 <body>
+<div id="app">
+    <nav class="navbar navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand">
+                <img src="images/phonebook.svg" alt="" width="30" height="24"
+                     class="d-inline-block align-text-top">
+                Phonebook on Vue and Servlets
+            </a>
+        </div>
+    </nav>
 
-<div id="app" class="content">
-    <div class="delete-dialog"></div>
 
-    <div class="alert" title="Нет выбранных контактов"></div>
+    <div class="container">
+        <!-- START FORM -->
+        <form @submit.prevent="addContact" class="row g-3 border needs-validation mt-3 py-2"
+              :class="{'was-validated': validation}" novalidate>
+            <div class="col-md-4 mt-0">
+                <label for="first_name" class="form-label">First name</label>
+                <input type="text" id="first_name" class="form-control" v-model.trim="firstName"
+                       :class="{ 'input-error': firstNameError.error && validation }" required>
+                <div class="invalid-feedback">
+                    Please provide your name
+                </div>
+            </div>
+            <div class="col-md-4 mt-0">
+                <label for="last_name" class="form-label">Last name</label>
+                <input type="text" id="last_name" class="form-control" v-model.trim="lastName"
+                       :class="{ 'input-error': lastNameError.error && validation }" required>
+                <div class="invalid-feedback">
+                    Please provide your last name
+                </div>
+            </div>
+            <div class="col-md-4 mt-0">
+                <label for="telephone_number" class="form-label">Telephone</label>
+                <input type="tel" id="telephone_number" class="form-control" v-model.trim="phone"
+                       :class="{ 'input-error': phoneError.error && validation }" required>
+                <div class="invalid-feedback">
+                    You have to enter phone number
+                </div>
+            </div>
+            <div class="form-check form-switch mx-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                       v-model="important">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Set as important</label>
+            </div>
+            <div class="col mt-3">
+                <button class="btn btn-primary my-1">Add contact</button>
+                <button class="btn btn-danger my-1" type="button" @click="showConfirmDeleteDialog(null)">Delete selected
+                </button>
+                <button @click.prevent="clearForm" class="btn btn-secondary my-1" type="button">Clear form</button>
+            </div>
+        </form>
+        <!-- END FORM -->
 
-    <div class="filter-container">
-        <label class="mr-1">
-            Введите текст:
-            <input type="text" class="form-control input-sm"/>
-        </label>
-        <button class="btn btn-primary">Отфильтровать</button>
-        <button class="btn btn-primary">Сбросить фильтр</button>
+        <div class="input-group mt-3 justify-content-center">
+            <button @click.prevent="exportContacts" class="btn btn-outline-secondary" type="button">Export contacts to
+                .xlsx
+            </button>
+        </div>
+
+        <!-- START SEARCH PANEL -->
+        <div class="row justify-content-center">
+            <form @submit.prevent class="g-3 col-md-8 col-12 border mt-3 py-3" novalidate id="search_form">
+                <div class="input-group">
+                    <button @click.prevent="resetFilter" class="btn btn-outline-secondary" type="button">Reset</button>
+                    <input type="text" class="form-control" placeholder="Type to search" aria-label="Search panel"
+                           v-model.trim="term">
+                    <button @click.prevent="loadData(term)" class="btn btn-primary" type="button">Search</button>
+                </div>
+            </form>
+        </div>
+        <!-- END SEARCH PANEL -->
+
+        <!-- START CONTENT TABLE -->
+        <div class="table-responsive">
+            <table v-cloak class="table table-hover mt-3">
+                <thead class="table-light">
+                <tr class="align-middle">
+                    <th>
+                        <label class="select-me-label">
+                            <input class="select-me"
+                                   type="checkbox"
+                                   v-model="isGeneralCheckboxChecked"
+                                   v-indeterminate="isGeneralCheckBoxIndeterminate"
+                                   :disabled="rows.length === 0">
+                        </label>
+                    </th>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Phone number</th>
+                    <th scope="col">Important</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="align-middle" v-for="row in rows">
+                    <template v-if="row.shown">
+                        <td>
+                            <label class="select-me-label">
+                                <input type="checkbox" class="select-me" v-model="row.checked">
+                            </label>
+                        </td>
+                        <td>{{ row.number }}</td>
+                        <td>{{ row.firstName }}</td>
+                        <td>{{ row.lastName }}</td>
+                        <td>{{ row.phone }}</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       v-model="row.important"
+                                       @click="toggleImportant(row.id)">
+                            </div>
+                        </td>
+                        <td>
+                            <button @click="showConfirmDeleteDialog(row)"
+                                    type="button"
+                                    class="btn-close"
+                                    aria-label="Delete"></button>
+                        </td>
+                    </template>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- END CONTENT TABLE -->
+
+        <div class="server-error-message-container">
+            <span v-show="serverValidation" v-text="serverError"></span>
+        </div>
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-2 align-items-center">
+                <span class="text-muted">© Maxim Biluta</span>
+            </div>
+        </footer>
     </div>
 
-    <table class="table table-bordered contact-table">
-        <thead>
-        <tr>
-            <th>
-                <label class="select-all-label">
-                    <input type="checkbox" title="Выбрать"/>
-                </label>
-            </th>
-            <th>№</th>
-            <th>Фамилия</th>
-            <th>Имя</th>
-            <th>Телефон</th>
-            <th>Удалить</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-cloak v-for="row in rows">
-            <template v-if="row.shown">
-                <td>
-                    <label class="select-me-label">
-                        <input type="checkbox" class="select-me"/>
-                    </label>
-                </td>
-                <td v-text="row.number"></td>
-                <td v-text="row.lastName"></td>
-                <td v-text="row.firstName"></td>
-                <td v-text="row.phone"></td>
-                <td>
-                    <button class="btn btn-primary" type="button">Удалить</button>
-                </td>
-            </template>
-        </tr>
-        </tbody>
-    </table>
-
-    <button type="button" class="btn btn-primary">Удалить выбранные</button>
-
-    <br>
-
-    <div class="server-error-message-container">
-        <span v-show="serverValidation" v-text="serverError"></span>
+    <!-- Confirm delete Modal -->
+    <div class="modal fade" id="delete_confirmation_modal" tabindex="-1" aria-labelledby="modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Delete confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">{{ confirmDeleteModalMessage }}</div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            id="modal-cancel">Cancel
+                    </button>
+                    <button type="button"
+                            @click="confirmDelete(contactIdsForDelete)"
+                            class="btn btn-danger"
+                            data-bs-dismiss="modal"
+                            id="modal-delete">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <form class="form">
-        <div>
-            <label class="form-label">
-                <span class="form-field">Фамилия:</span>
-                <input type="text" class="form-control input-sm form-input ml-1"
-                       v-model="lastName"
-                       v-bind:class="{ 'input-error': lastNameError.error && validation }"/>
-                <span v-show="validation" class="error-message" v-text="lastNameError.message"></span>
-            </label>
+    <!-- Phone exists Modal -->
+    <div class="modal fade" id="telephone_exists_modal" tabindex="-1"
+         aria-labelledby="modalTelephoneExistsLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTelephoneExistsLabel">Cannot add the contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Telephone already exists in the phonebook.
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-warning"
+                            data-bs-dismiss="modal"
+                            id="modal-dismiss">Dismiss
+                    </button>
+                </div>
+            </div>
         </div>
-        <div>
-            <label class="form-label">
-                <span class="form-field">Имя:</span>
-                <input type="text" class="form-control input-sm form-input ml-1"
-                       v-model="firstName"
-                       v-bind:class="{ 'input-error': firstNameError.error && validation }"/>
-                <span v-show="validation" class="error-message" v-text="firstNameError.message"></span>
-            </label>
-        </div>
-        <div>
-            <label class="form-label">
-                <span class="form-field">Телефон:</span>
-                <input type="text" class="form-control input-sm form-input ml-1"
-                       v-model="phone"
-                       v-bind:class="{ 'input-error': phoneError.error && validation }"/>
-                <span v-show="validation" class="error-message" v-text="phoneError.message"></span>
-            </label>
-        </div>
-        <button type="button" class="btn btn-primary" v-on:click="addContact">Добавить</button>
-    </form>
+    </div>
 </div>
-
-<script src="js/libs/jquery.js"></script>
-<script src="js/libs/bootstrap.bundle.js"></script>
-<script src="js/libs/vue.js"></script>
-<script src="js/phonebook.js"></script>
 </body>
 </html>
