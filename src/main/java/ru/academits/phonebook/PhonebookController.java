@@ -23,9 +23,9 @@ public class PhonebookController {
         this.contactService = contactService;
     }
 
-    @RequestMapping(value = "getAllContacts", method = RequestMethod.POST)
+    @RequestMapping(value = {"getAllContacts/", "getAllContacts/{term}"}, method = RequestMethod.POST)
     @ResponseBody
-    public List<Contact> getContacts(@RequestParam String term) {
+    public List<Contact> getContacts(@PathVariable(required = false) String term) {
         // === LOGGER START
         if (term == null) {
             logger.info("getContacts method was called with no term");
@@ -36,12 +36,16 @@ public class PhonebookController {
         }
         // === LOGGER END
 
+        System.out.println("CL");
         List<Contact> contactList = contactService.getAllContacts();
 
         // Filter contacts if term is passed
         if (term == null || term.equals("")) {
+            System.out.println("EMPTY TERM");
             return contactList;
         }
+
+        System.out.printf("TERM = %s%n", term);
 
         String finalTerm = term.toLowerCase(Locale.ROOT);
 

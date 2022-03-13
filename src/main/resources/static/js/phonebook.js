@@ -120,7 +120,7 @@ new Vue({
         toggleImportant(contactId) {
             $.ajax({
                 type: "POST",
-                url: "/phonebook/toggleimportance",
+                url: "/phonebook/rpc/api/v1/toggleimportance",
                 data: JSON.stringify(contactId)
             }).fail(() => {
                 console.log("Toggle importance failed. Possible reason: contact was deleted on server");
@@ -155,7 +155,7 @@ new Vue({
         confirmDelete(contactIds) {
             $.ajax({
                 type: "POST",
-                url: "/phonebook/delete",
+                url: "/phonebook/rpc/api/v1/delete",
                 data: JSON.stringify(contactIds)
             }).done(() => {
                 this.serverValidation = false;
@@ -175,7 +175,7 @@ new Vue({
 
             $.ajax({
                 type: "GET",
-                url: "/phonebook/export",
+                url: "/phonebook/rpc/api/v1/export",
             }).done(response => {
                 const url = window.URL.createObjectURL(new Blob([response]));
 
@@ -191,12 +191,17 @@ new Vue({
         },
 
         loadData(term) {
+            let termFinal = "";
+
+            if (term !== null && typeof term !== "undefined" && term !== "") {
+                termFinal = term;
+            }
+
             $.ajax({
                 type: "POST",
-                url: "/phonebook/rpc/api/v1/getAllContacts",
-                data: term === null ? "" : JSON.stringify(term)
-            }).done(response => {
-                const contactListFromServer = JSON.parse(response);
+                url: "/phonebook/rpc/api/v1/getAllContacts/" + termFinal,
+                data: term
+            }).done(contactListFromServer => {
                 this.rows = this.convertContactList(contactListFromServer);
             }).fail(ajaxRequest => {
                 console.log(ajaxRequest.message);
@@ -268,7 +273,7 @@ new Vue({
     },
 
     created() {
-        this.loadData();
+        this.loadData(null);
     },
 
     watch: {
