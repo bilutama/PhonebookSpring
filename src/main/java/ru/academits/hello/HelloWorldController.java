@@ -15,5 +15,3 @@ public class HelloWorldController {
         return "hello, " + name;
     }
 }
-
-

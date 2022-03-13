@@ -8,9 +8,8 @@ import ru.academits.service.ContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/phonebook/rpc/api/v1")
@@ -23,42 +22,36 @@ public class PhonebookController {
         this.contactService = contactService;
     }
 
-    @RequestMapping(value = {"getAllContacts/", "getAllContacts/{term}"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"getContacts/", "getContacts/{term}"}, method = RequestMethod.POST)
     @ResponseBody
     public List<Contact> getContacts(@PathVariable(required = false) String term) {
-        // === LOGGER START
-        if (term == null) {
-            logger.info("getContacts method was called with no term");
+        // === LOGGER START ===
+        if (term == null || term.equals("")) {
+            logger.info("getContacts method is called with empty term");
         } else {
-            // TODO: upd
             String logMessage = String.format("getContacts method was called with term = %s", term);
             logger.info(logMessage);
         }
-        // === LOGGER END
+        // === LOGGER END ===
 
-        System.out.println("CL");
-        List<Contact> contactList = contactService.getAllContacts();
-
-        // Filter contacts if term is passed
-        if (term == null || term.equals("")) {
-            System.out.println("EMPTY TERM");
-            return contactList;
-        }
-
-        System.out.printf("TERM = %s%n", term);
-
-        String finalTerm = term.toLowerCase(Locale.ROOT);
-
-        return contactList.stream()
-                .filter(c -> c.getFirstName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
-                        c.getLastName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
-                        c.getPhone().toLowerCase(Locale.ROOT).contains(finalTerm))
-                .collect(Collectors.toList());
+        return contactService.getContacts(term);
     }
 
     @RequestMapping(value = "addContact", method = RequestMethod.POST)
     @ResponseBody
     public ContactValidation addContact(@RequestBody Contact contact) {
         return contactService.addContact(contact);
+    }
+
+    @RequestMapping(value = "toggleImportant/{contactId}", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean toggleImportant(@PathVariable Integer contactId) {
+        return contactService.toggleImportant(contactId);
+    }
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public void DeleteContacts(@RequestBody ArrayList<Integer> contactIds) {
+        contactService.deleteContacts(contactIds);
     }
 }

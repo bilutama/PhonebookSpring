@@ -7,6 +7,8 @@ import ru.academits.model.ContactValidation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class ContactService {
@@ -69,8 +71,19 @@ public class ContactService {
         return contactValidation;
     }
 
-    public List<Contact> getAllContacts() {
-        return contactDao.getAllContacts();
+    public List<Contact> getContacts(String term) {
+        // Return all contact if term is empty or null
+        if (term == null || term.equals("")) {
+            return contactDao.getAllContacts();
+        }
+
+        String finalTerm = term.toLowerCase(Locale.ROOT);
+
+        return contactDao.getAllContacts().stream()
+                .filter(c -> c.getFirstName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                        c.getLastName().toLowerCase(Locale.ROOT).contains(finalTerm) ||
+                        c.getPhone().toLowerCase(Locale.ROOT).contains(finalTerm))
+                .collect(Collectors.toList());
     }
 
     public boolean toggleImportant(int contactId) {

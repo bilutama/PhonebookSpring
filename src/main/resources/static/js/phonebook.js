@@ -120,8 +120,7 @@ new Vue({
         toggleImportant(contactId) {
             $.ajax({
                 type: "POST",
-                url: "/phonebook/rpc/api/v1/toggleimportance",
-                data: JSON.stringify(contactId)
+                url: "/phonebook/rpc/api/v1/toggleImportant/" + contactId,
             }).fail(() => {
                 console.log("Toggle importance failed. Possible reason: contact was deleted on server");
             });
@@ -156,6 +155,8 @@ new Vue({
             $.ajax({
                 type: "POST",
                 url: "/phonebook/rpc/api/v1/delete",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
                 data: JSON.stringify(contactIds)
             }).done(() => {
                 this.serverValidation = false;
@@ -191,16 +192,16 @@ new Vue({
         },
 
         loadData(term) {
-            let termFinal = "";
+            let termPath = "";
 
             if (term !== null && typeof term !== "undefined" && term !== "") {
-                termFinal = term;
+                termPath = term;
             }
 
             $.ajax({
                 type: "POST",
-                url: "/phonebook/rpc/api/v1/getAllContacts/" + termFinal,
-                data: term
+                url: "/phonebook/rpc/api/v1/getContacts/" + termPath
+                //data: term
             }).done(contactListFromServer => {
                 this.rows = this.convertContactList(contactListFromServer);
             }).fail(ajaxRequest => {
