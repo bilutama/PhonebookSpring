@@ -156,11 +156,9 @@ new Vue({
                 type: "POST",
                 url: "/phonebook/rpc/api/v1/delete",
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
                 data: JSON.stringify(contactIds)
             }).done(() => {
                 this.serverValidation = false;
-
                 this.contactForDelete = null;
                 // Clear selectedRowsIds array from contacts ids that were deleted
                 this.selectedRowsIds = this.selectedRowsIds.filter(deletedContactId => !this.contactIdsForDelete.includes(deletedContactId));
@@ -173,13 +171,12 @@ new Vue({
 
         exportContacts() {
             //window.open(("/phonebook/export"), "_blank");
-
+            // TODO: implement excel export
             $.ajax({
                 type: "GET",
                 url: "/phonebook/rpc/api/v1/export",
             }).done(response => {
                 const url = window.URL.createObjectURL(new Blob([response]));
-
                 const link = document.createElement("a");
                 link.href = url;
                 link.setAttribute("download", "phonebook.xlsx");
