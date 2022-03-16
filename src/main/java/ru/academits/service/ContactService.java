@@ -90,7 +90,7 @@ public class ContactService {
         return contactDao.toggleImportant(contactId);
     }
 
-    public void deleteContacts(ArrayList<Integer> contactsIds) {
-        contactDao.deleteContacts(contactsIds);
+    public boolean deleteContacts(ArrayList<Integer> contactsIds) {
+        return contactDao.deleteContacts(contactsIds);
     }
 }

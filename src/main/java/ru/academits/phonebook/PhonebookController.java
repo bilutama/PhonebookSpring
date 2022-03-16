@@ -25,14 +25,10 @@ public class PhonebookController {
     @RequestMapping(value = {"getContacts/", "getContacts/{term}"}, method = RequestMethod.POST)
     @ResponseBody
     public List<Contact> getContacts(@PathVariable(required = false) String term) {
-        // === LOGGER START ===
-        if (term == null || term.equals("")) {
-            logger.info("getContacts method is called with empty term");
-        } else {
-            String logMessage = String.format("getContacts method was called with term = %s", term);
-            logger.info(logMessage);
-        }
-        // === LOGGER END ===
+        // === LOGGING START ===
+        String logMessage = String.format("getContacts is called with term = \"%s\"", term == null ? "" : term);
+        logger.info(logMessage);
+        // === LOGGING END ===
 
         return contactService.getContacts(term);
     }
@@ -40,18 +36,57 @@ public class PhonebookController {
     @RequestMapping(value = "addContact", method = RequestMethod.POST)
     @ResponseBody
     public ContactValidation addContact(@RequestBody Contact contact) {
+        // === LOGGING START ===
+        String logMessage = String.format("New contact is added: first name=%s, last name=%s, phone=%s",
+                contact.getFirstName(), contact.getLastName(), contact.getPhone());
+        logger.info(logMessage);
+        // === LOGGING END ===
+
         return contactService.addContact(contact);
     }
 
     @RequestMapping(value = "toggleImportant/{contactId}", method = RequestMethod.POST)
     @ResponseBody
     public boolean toggleImportant(@PathVariable Integer contactId) {
-        return contactService.toggleImportant(contactId);
+        boolean isImportanceToggled = contactService.toggleImportant(contactId);
+
+        // === LOGGING START ===
+        String logMessage;
+
+        if (isImportanceToggled) {
+            logMessage = String.format("Toggling importance for contact ID=%d succeeded.", contactId);
+        } else {
+            logMessage = String.format("Toggling importance for contact ID=%d failed. Possible reason: no such contact in the database.", contactId);
+        }
+
+        logger.info(logMessage);
+        // === LOGGING END ===
+
+        return isImportanceToggled;
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public void DeleteContacts(@RequestBody ArrayList<Integer> contactIds) {
-        contactService.deleteContacts(contactIds);
+    public boolean DeleteContacts(@RequestBody ArrayList<Integer> contactIds) {
+        boolean contactsAreDeleted = contactService.deleteContacts(contactIds);
+
+        // === LOGGING START ===
+        String contactIdsString = contactIds.stream()
+                .map(Object::toString)
+                .reduce((t, u) -> t + ", " + u)
+                .orElse("");
+
+        String logMessage;
+
+        if (contactsAreDeleted) {
+            logMessage = String.format("Deleting contacts with IDs = %s succeeded.", contactIdsString);
+        } else {
+            logMessage = String.format("Deleting contacts with IDs = %s failed. Possible reason: no such contacts in the database.", contactIdsString);
+        }
+
+        logger.info(logMessage);
+        // === LOGGING END ===
+
+        return contactsAreDeleted;
     }
 }

@@ -36,11 +36,14 @@ public class ContactDao {
         contactList.add(contact);
     }
 
-    public void deleteContacts(ArrayList<Integer> contactsIds) {
+    public boolean deleteContacts(ArrayList<Integer> contactsIds) {
+        int listSizeBeforeDelete = contactList.size();
         contactList = contactList
                 .stream()
                 .filter(c -> !contactsIds.contains(c.getId()))
                 .collect(Collectors.toList());
+
+        return contactList.size() != listSizeBeforeDelete;
     }
 
     public boolean toggleImportant(int contactId) {
