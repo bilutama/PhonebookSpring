@@ -22,7 +22,7 @@ public class ContactService {
         List<Contact> contactList = contactDao.getAllContacts();
 
         for (Contact contact : contactList) {
-            if (contact.getPhone().equals(phone)) {
+            if (contact.getPhone().equalsIgnoreCase(phone)) {
                 return true;
             }
         }
@@ -36,25 +36,25 @@ public class ContactService {
 
         if (contact.getFirstName().isEmpty()) {
             contactValidation.setValid(false);
-            contactValidation.setError("Поле Имя должно быть заполнено.");
+            contactValidation.setError("First name is required");
             return contactValidation;
         }
 
         if (contact.getLastName().isEmpty()) {
             contactValidation.setValid(false);
-            contactValidation.setError("Поле Фамилия должно быть заполнено.");
+            contactValidation.setError("Last name is required");
             return contactValidation;
         }
 
         if (contact.getPhone().isEmpty()) {
             contactValidation.setValid(false);
-            contactValidation.setError("Поле Телефон должно быть заполнено.");
+            contactValidation.setError("Telephone number is required");
             return contactValidation;
         }
 
         if (isExistContactWithPhone(contact.getPhone())) {
             contactValidation.setValid(false);
-            contactValidation.setError("Номер телефона не должен дублировать другие номера в телефонной книге.");
+            contactValidation.setError("Telephone number cannot duplicate that are already exist");
             return contactValidation;
         }
 

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PhonebookSpringApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-    <module name="phonebookspring" />
+    <module name="PhonebookSpring" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="ru.academits.*" />
