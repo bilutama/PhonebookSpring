@@ -1,6 +1,5 @@
 package ru.academits.phonebook;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.academits.model.Contact;
@@ -15,9 +14,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/phonebook/rpc/api/v1")
 public class PhonebookController {
-    private static final Logger logger = LoggerFactory.getLogger(PhonebookController.class);
-
     private final ContactService contactService;
+    private static final Logger logger = LoggerFactory.getLogger(PhonebookController.class);
 
     public PhonebookController(ContactService contactService) {
         this.contactService = contactService;
@@ -68,7 +66,7 @@ public class PhonebookController {
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public boolean DeleteContacts(@RequestBody ArrayList<Integer> contactIds) {
+    public boolean deleteContacts(@RequestBody ArrayList<Integer> contactIds) {
         boolean contactsAreDeleted = contactService.deleteContacts(contactIds);
 
         // === LOGGING START ===
