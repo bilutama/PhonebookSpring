@@ -38,11 +38,11 @@ public class RandomContactRemoverScheduler {
         ArrayList<Integer> contactIds = new ArrayList<>();
         contactIds.add(randomContact.getId());
 
-        phonebookController.deleteContacts(contactIds);
-
         // === LOGGING START ===
         String logMessage = String.format("Random contact scheduled delete: contact with Id = %d set as subject to delete.", contactIds.get(0));
         logger.info(logMessage);
         // === LOGGING END ===
+
+        phonebookController.deleteContacts(contactIds);
     }
 }
