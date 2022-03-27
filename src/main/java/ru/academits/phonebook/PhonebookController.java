@@ -25,7 +25,8 @@ public class PhonebookController {
     @ResponseBody
     public List<Contact> getContacts(@PathVariable(required = false) String term) {
         // === LOGGING START ===
-        String logMessage = String.format("getContacts is called with term = \"%s\"", term == null ? "" : term);
+        String finalTerm = term == null ? "" : term;
+        String logMessage = String.format("getContacts is called with term = \"%s\"", finalTerm);
         logger.info(logMessage);
         // === LOGGING END ===
 
